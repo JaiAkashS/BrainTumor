@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Brain Tumor Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <main class="layout">
+        <section class="card">
+            <p class="eyebrow">Medical Imaging AI</p>
+            <h1>Brain MRI Tumor Classifier</h1>
+            <p class="subtitle">Upload a brain MRI image and get an instant model prediction.</p>
+
+            <form id="predictForm" class="uploader">
+                <label class="dropzone" for="imageInput" id="dropzone">
+                    <input id="imageInput" name="image" type="file" accept="image/*" required>
+                    <span class="drop-title">Drop an image here or click to browse</span>
+                    <span class="drop-note">Supports JPG, JPEG, PNG, BMP</span>
+                </label>
+
+                <img id="preview" class="preview" alt="Uploaded preview" hidden>
+
+                <button id="predictBtn" type="submit">Classify Image</button>
+            </form>
+
+            <section id="result" class="result" hidden>
+                <h2>Prediction</h2>
+                <p id="label" class="label"></p>
+                <p id="confidence" class="confidence"></p>
+            </section>
+
+            <p id="error" class="error" hidden></p>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById("predictForm");
+        const input = document.getElementById("imageInput");
+        const preview = document.getElementById("preview");
+        const result = document.getElementById("result");
+        const label = document.getElementById("label");
+        const confidence = document.getElementById("confidence");
+        const error = document.getElementById("error");
+        const button = document.getElementById("predictBtn");
+
+        input.addEventListener("change", () => {
+            const file = input.files[0];
+            if (!file) {
+                preview.hidden = true;
+                return;
+            }
+
+            preview.src = URL.createObjectURL(file);
+            preview.hidden = false;
+            error.hidden = true;
+            result.hidden = true;
+        });
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            error.hidden = true;
+            result.hidden = true;
+
+            if (!input.files.length) {
+                error.textContent = "Please select an image first.";
+                error.hidden = false;
+                return;
+            }
+
+            const data = new FormData();
+            data.append("image", input.files[0]);
+
+            button.disabled = true;
+            button.textContent = "Classifying...";
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: data
+                });
+
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(payload.error || "Prediction failed.");
+                }
+
+                label.textContent = payload.label;
+                confidence.textContent = `Confidence: ${payload.confidence_percent}% (probability: ${payload.probability.toFixed(4)})`;
+                result.hidden = false;
+            } catch (err) {
+                error.textContent = err.message || "Something went wrong.";
+                error.hidden = false;
+            } finally {
+                button.disabled = false;
+                button.textContent = "Classify Image";
+            }
+        });
+    </script>
+</body>
+
+</html>
