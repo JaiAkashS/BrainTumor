@@ -1,7 +1,6 @@
 .venv
 __pycache__
 logs
-no
-yes
 models
 venv
+data
