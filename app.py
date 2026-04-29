@@ -12,6 +12,7 @@ from tensorflow.keras.models import Model
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_CANDIDATES = [
+    BASE_DIR / "cnn-parameters-improvement-23-0.91.h5",
     BASE_DIR / "models" / "cnn-parameters-improvement-23-0.91.h5",
     BASE_DIR / "models" / "cnn-parameters-improvement-04-0.63.h5",
 ]
