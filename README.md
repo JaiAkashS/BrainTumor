@@ -112,4 +112,27 @@ Contributes are welcome!
 <br>Thank you!
 
 
+# Deployment
+
+## Render (recommended)
+
+This repo includes a `render.yaml` and `Procfile`, so you can deploy as a Render **Web Service**.
+
+1. Push this repo to GitHub.
+2. In Render: **New**  **Blueprint**  select your repo.
+3. Render will read `render.yaml` and create a Python web service.
+4. Deploy.
+
+The app will be served by Gunicorn using `app:app` (the Flask app object in `app.py`).
+
+Notes:
+- If the free plan runs out of memory/CPU for TensorFlow, you may need a larger instance or a lighter model.
+- The weights must be present in the repo under `models/` (the app loads `models/*.h5`).
+
+## Vercel
+
+Vercel is optimized for serverless/edge workloads. A Flask + TensorFlow app often exceeds function size/memory/time limits.
+If you need a free host for ML inference, Render/Fly.io/Hugging Face Spaces are usually a better fit.
+
+
 

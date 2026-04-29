@@ -1,5 +1,9 @@
 Flask>=3.0.0
-tensorflow>=2.10.0
+# TensorFlow packaging differs by OS. On Linux, prefer the CPU-only wheel to reduce size.
+tensorflow>=2.10.0; platform_system == "Windows"
+tensorflow-cpu>=2.10.0; platform_system != "Windows"
 numpy>=1.23.0
-opencv-python>=4.7.0
+# Headless OpenCV avoids pulling GUI/X11 deps on servers.
+opencv-python-headless>=4.7.0
 imutils>=0.5.4
+gunicorn>=21.2.0
